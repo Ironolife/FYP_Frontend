@@ -1,0 +1,161 @@
+<div class="interactive_row" id="user_article">
+  <div class="input">
+    <div class="mat-title">
+      <div style="width: max-content;">✍&ensp;Article Input</div>
+      <div style="flex: 1 1 auto;"></div>
+      <button mat-raised-button color="primary" (click)="article_upload.click()" style="margin-right: 8px;">
+        <mat-icon>publish</mat-icon>
+      </button>
+      <input #article_upload type="file" accept=".txt" style="display: none;" (change)="onFileUpload($event, article)">
+      <button mat-raised-button color="primary" (click)="random_input_placeholder()" style="margin-right: 8px;">
+        <mat-icon>cached</mat-icon>
+      </button>
+      <button mat-raised-button color="primary" (click)="summarize()" [disabled]="loading_output">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+    </div>
+    <mat-form-field appearance="outline">
+      <textarea matInput [formControl]="article" [placeholder]="placeholders?.article" (change)="onArticleChange()"></textarea>
+    </mat-form-field>
+  </div>
+  <div class="output">
+    <div class="mat-title">
+      <div style="width: max-content; margin-right: 8px;">🖥️&ensp;Model Output</div>
+      <button mat-icon-button color="primary" (click)="output_info()">
+        <mat-icon>info</mat-icon>
+      </button>
+      <div style="flex: 1 1 auto;"></div>
+      <mat-progress-spinner mode="indeterminate" diameter="40" *ngIf="loading_output"></mat-progress-spinner>
+    </div>
+    <div id="summary"></div>
+  </div>
+</div>
+
+<div class="interactive_row" id="user_summary">
+  <div class="input">
+    <div class="mat-title">
+      <div style="width: max-content;">📰&ensp;Human Summary (Optional)</div>
+      <div style="flex: 1 1 auto;"></div>
+      <button mat-raised-button color="primary" (click)="summary_upload.click()" style="margin-right: 8px;">
+        <mat-icon>publish</mat-icon>
+      </button>
+      <input #summary_upload type="file" accept=".txt" style="display: none;" (change)="onFileUpload($event, summary)">
+    </div>
+    <mat-form-field appearance="outline">
+      <textarea matInput [formControl]="summary" [placeholder]="placeholders?.summary"></textarea>
+    </mat-form-field>
+  </div>
+  <div class="output">
+    <div class="mat-title">
+      <div style="width: max-content; margin-right: 8px;">📊&ensp;Statistics</div>
+      <button mat-icon-button color="primary" (click)="scores_info()">
+        <mat-icon>info</mat-icon>
+      </button>
+      <div style="flex: 1 1 auto;"></div>
+    </div>
+    <div id="statistics">
+      <div *ngIf="statistics">
+        <span class="label">Article Length</span><span class="value">{{statistics?.article_length}} words</span>
+      </div>
+      <div *ngIf="statistics">
+        <span class="label">Summary Length</span><span class="value">{{statistics?.summary_length}} words</span>
+      </div>
+      <div *ngIf="statistics">
+        <span class="label">Reduction</span><span class="value">{{statistics?.reduction}}%</span>
+      </div>
+      <br>
+      <div *ngIf="statistics?.rouge1">
+        <span class="label">Rouge-1</span><span class="value">{{statistics?.rouge1}}</span>
+      </div>
+      <div *ngIf="statistics?.rouge2">
+        <span class="label">Rouge-2</span><span class="value">{{statistics?.rouge2}}</span>
+      </div>
+      <div *ngIf="statistics?.rougel">
+        <span class="label">Rouge-L</span><span class="value">{{statistics?.rougel}}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="batch_testing">
+  <div class="mat-title">
+    <div style="width: max-content; margin-right: 8px;">🧪&ensp;Batch Testing</div>
+    <div style="flex: 1 1 auto;"></div>
+    <button mat-raised-button color="primary" (click)="random_batch_testing()" [disabled]="loading_batch" style="margin-right: 8px;">
+      <mat-icon>cached</mat-icon>
+    </button>
+  </div>
+  <div class="table">
+    <div class="row header">
+      <div class="col">Article</div>
+      <div class="col">Human Summary</div>
+      <div class="col">Model Output</div>
+      <div class="col">
+        Rouge Scores
+      </div>
+    </div>
+    <div class="row content" *ngFor="let t of batch_testing">
+      <div class="col">{{t.article}}</div>
+      <div class="col">{{t.summary}}</div>
+      <div class="col" *ngIf="!t.output">Predicting...</div>
+      <div class="col output" *ngIf="t.output">
+        <span *ngFor="let w of t.output" [class]="w.type">{{w.word}}&nbsp;</span>
+      </div>
+      <div class="col rouge">
+        <div class="pair">
+          <div class="label">R1</div>
+          <div class="value">{{t.scores?.rouge1}}</div>
+          <div class="bar">
+            <div class="value" [ngStyle]="{'width': t.scores?.rouge1_raw * 100 + '%'}"></div>
+          </div>
+        </div>
+        <div class="pair">
+          <div class="label">R2</div>
+          <div class="value">{{t.scores?.rouge2}}</div>
+          <div class="bar">
+            <div class="value" [ngStyle]="{'width': t.scores?.rouge2_raw * 100 + '%'}"></div>
+          </div>
+        </div>
+        <div class="pair">
+          <div class="label">RL</div>
+          <div class="value">{{t.scores?.rougel}}</div>
+          <div class="bar">
+            <div class="value" [ngStyle]="{'width': t.scores?.rougel_raw * 100 + '%'}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row footer">
+      <div class="col"></div>
+      <div class="col">
+        <button mat-raised-button color="primary" (click)="random_batch_testing()" [disabled]="loading_batch" style="margin-right: 8px;">
+          <mat-icon>cached</mat-icon>
+        </button>
+      </div>
+      <div class="col">Average</div>
+      <div class="col rouge">
+        <div class="pair">
+          <div class="label">R1</div>
+          <div class="value">{{batch_avg?.rouge1}}</div>
+          <div class="bar">
+            <div class="value" [ngStyle]="{'width': batch_avg?.rouge1_raw * 100 + '%'}"></div>
+          </div>
+        </div>
+        <div class="pair">
+          <div class="label">R2</div>
+          <div class="value">{{batch_avg?.rouge2}}</div>
+          <div class="bar">
+            <div class="value" [ngStyle]="{'width': batch_avg?.rouge2_raw * 100 + '%'}"></div>
+          </div>
+        </div>
+        <div class="pair">
+          <div class="label">RL</div>
+          <div class="value">{{batch_avg?.rougel}}</div>
+          <div class="bar">
+            <div class="value" [ngStyle]="{'width': batch_avg?.rougel_raw * 100 + '%'}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

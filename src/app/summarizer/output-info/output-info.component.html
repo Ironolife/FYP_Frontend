@@ -1,0 +1,36 @@
+<h1 mat-dialog-title style="display: flex; align-items: center;">
+    Output Interpretation
+    <span style="flex: 1 1 auto"></span>
+    <button mat-icon-button [mat-dialog-close]>
+        <mat-icon>close</mat-icon>
+    </button>
+</h1>
+<div mat-dialog-content>
+    <table style="table-layout: fixed; width: 100%; text-align: center;">
+        <tr>
+            <td></td>
+            <td>Article</td>
+            <td>Human Summary</td>
+        </tr>
+        <tr>
+            <td style="color: limegreen;">Word</td>
+            <td><mat-icon>check</mat-icon></td>
+            <td><mat-icon>check</mat-icon></td>
+        </tr>
+        <tr>
+            <td style="color: limegreen; text-decoration: underline;">Word</td>
+            <td><mat-icon>close</mat-icon></td>
+            <td><mat-icon>check</mat-icon></td>
+        </tr>
+        <tr>
+            <td>Word</td>
+            <td><mat-icon>check</mat-icon></td>
+            <td><mat-icon>close</mat-icon></td>
+        </tr>
+        <tr>
+            <td style="color: orange;">Word</td>
+            <td><mat-icon>close</mat-icon></td>
+            <td><mat-icon>close</mat-icon></td>
+        </tr>
+    </table>
+</div>
