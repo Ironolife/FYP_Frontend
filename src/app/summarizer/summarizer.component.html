@@ -81,6 +81,10 @@
   <div class="mat-title">
     <div style="width: max-content; margin-right: 8px;">🧪&ensp;Batch Testing</div>
     <div style="flex: 1 1 auto;"></div>
+    <mat-form-field style="margin-right: 16px; width: 180px;">
+      <mat-label matPrefix>Batch Size</mat-label>
+      <input style="text-align: right;" matInput [formControl]="batch_size" type="number">
+    </mat-form-field>
     <button mat-raised-button color="primary" (click)="random_batch_testing()" [disabled]="loading_batch" style="margin-right: 8px;">
       <mat-icon>cached</mat-icon>
     </button>
